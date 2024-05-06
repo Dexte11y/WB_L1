@@ -6,16 +6,21 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
 )
 
 func main() {
-	arr := [5]int{2, 4, 6, 8, 10}
-	for _, v := range arr {
-		go func() {
-			squareNumbers := v * v
-			fmt.Println(squareNumbers)
-		}()
+	numbers := []int{2, 4, 6, 8, 10}
+
+	var wg sync.WaitGroup
+	for _, num := range numbers {
+		wg.Add(1)
+		go func(n int) {
+			defer wg.Done()
+			square := n * n
+			fmt.Printf("%d squared is %d\n", n, square)
+		}(num)
 	}
-	time.Sleep(2 * time.Second)
+
+	wg.Wait() // Ждем завершения всех горутин
 }
